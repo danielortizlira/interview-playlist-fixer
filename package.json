@@ -11,5 +11,8 @@
   },
   "bin": {
     "playlist-fixer": "./bin/index.js"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
   }
 }
