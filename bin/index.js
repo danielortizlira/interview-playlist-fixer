@@ -63,3 +63,10 @@ for (const { playlist_id, song_id } of add_songs_to_playlist) {
     song_ids: [...indexedPlaylists[playlist_id]["song_ids"], song_id],
   };
 }
+
+// Remove the indexes to get the expected output format
+const updatedPlaylist = Object.keys(indexedPlaylists).map((id) => ({
+  id,
+  ...indexedPlaylists[id],
+}));
+
