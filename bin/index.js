@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs-extra");
+const log = require("./logger");
 
 const argv = require("yargs")(process.argv.slice(2))
   .usage("playlist-fixer <input-file> <changes-file> <output-file>")
@@ -12,13 +13,14 @@ const [inputFilePath, changesFilePath, outputFilePath] = argv._;
 const JSON_OPTIONS = { spaces: 2 };
 
 const handleInvalidInput = (filePath) => {
-  console.log(`Sorry, we couldn't find the ${filePath} file.`);
+  log(`Sorry, we couldn't find the ${filePath} file.`);
   process.exit(1);
 };
 
 const handleNotFound = (subject, context) => {
-  console.log(
-    `We couldn't find the ${subject} when ${context}. The change won't have any effect`
+  log(
+    `We couldn't find the ${subject} when ${context}. The change won't have any effect`,
+    "yellow"
   );
 };
 
@@ -110,3 +112,5 @@ fs.writeJSONSync(
   },
   JSON_OPTIONS
 );
+
+log(`Changes were succesfully recorded at -> ${outputFilePath}`, "green");
