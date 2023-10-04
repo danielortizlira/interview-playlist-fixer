@@ -10,7 +10,7 @@ const argv = require("yargs")(process.argv.slice(2))
 
 const [inputFilePath, changesFilePath, outputFilePath] = argv._;
 
-const JSON_OPTIONS = { spaces: 2 };
+const JSON_OUTPUT_OPTIONS = { spaces: 2 };
 
 const handleInvalidInput = (filePath) => {
   log(`Sorry, we couldn't find the ${filePath} file.`);
@@ -32,20 +32,22 @@ if (!fs.pathExistsSync(changesFilePath)) {
   handleInvalidInput(changesFilePath);
 }
 
-const indexerReducer = (acc, { id, ...rest }) => ({ ...acc, [id]: rest });
-
 const { users, playlists, songs } = fs.readJSONSync(inputFilePath);
 const { add_songs_to_playlist, new_playlists, deleted_playlists } =
   fs.readJSONSync(changesFilePath);
 
 let idAutoincrementalCount = 0;
 
-// We traverse the objects once to add the id as an index.
-// This way we only need to traverse them once.
+/**
+ * Since we need to check for the songs, playlists, and users existance,
+ * we are creating an object for each where the objects keys are the ids.
+ * This way we only need to traverse them once.
+ */
+const indexerReducer = (acc, { id, ...rest }) => ({ ...acc, [id]: rest });
 const indexedSongs = songs.reduce(indexerReducer, {});
 const indexedUsers = users.reduce(indexerReducer, {});
 
-// Delete playlists
+// Index and delete playlists
 const indexedPlaylists = playlists.reduce((acc, { id, ...rest }) => {
   const numericId = Number.parseInt(id);
 
@@ -110,7 +112,7 @@ fs.writeJSONSync(
     playlists: updatedPlaylist,
     songs,
   },
-  JSON_OPTIONS
+  JSON_OUTPUT_OPTIONS
 );
 
 log(`Changes were succesfully recorded at -> ${outputFilePath}`, "green");
