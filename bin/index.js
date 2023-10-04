@@ -102,7 +102,11 @@ for (const { owner_id, song_ids } of new_playlists) {
     continue;
   }
 
-  updatedPlaylist.push({ id: idAutoincrementalCount++, owner_id, song_ids });
+  updatedPlaylist.push({
+    id: `${idAutoincrementalCount++}`,
+    owner_id,
+    song_ids,
+  });
 }
 
 fs.writeJSONSync(
