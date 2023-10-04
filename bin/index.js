@@ -81,20 +81,24 @@ const updatedPlaylist = Object.keys(indexedPlaylists).map((id) => ({
 }));
 
 // Add playlists
-for (const playlist of new_playlists) {
-  if (!indexedUsers[playlist.owner_id]) {
-    // the user doesn't exists
+for (const { owner_id, song_ids } of new_playlists) {
+  const errorContext = `adding the playlist owner: ${owner_id} songs: ${song_ids.join(
+    " "
+  )}`;
+
+  if (!indexedUsers[owner_id]) {
+    handleNotFound(`user ${owner_id}`, errorContext);
     continue;
   }
 
-  const validSongs = playlist.song_ids.every((id) => !!indexedSongs[id]);
+  const validSongs = song_ids.every((id) => !!indexedSongs[id]);
 
   if (!validSongs) {
-    // one or more songs are invalid
+    handleNotFound(`songs ${song_ids.join(" ")}`, errorContext);
     continue;
   }
 
-  updatedPlaylist.push({ id: idAutoincrementalCount++, ...playlist });
+  updatedPlaylist.push({ id: idAutoincrementalCount++, owner_id, song_ids });
 }
 
 fs.writeJSONSync(
