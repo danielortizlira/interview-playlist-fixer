@@ -34,6 +34,8 @@ const { users, playlists, songs } = fs.readJSONSync(inputFilePath);
 const { add_songs_to_playlist, new_playlists, deleted_playlists } =
   fs.readJSONSync(changesFilePath);
 
+let idAutoincrementalCount = 0;
+
 // We traverse the objects once to add the id as an index.
 // This way we only need to traverse them once.
 const indexedSongs = songs.reduce(indexerReducer, {});
@@ -41,6 +43,12 @@ const indexedUsers = users.reduce(indexerReducer, {});
 
 // Delete playlists
 const indexedPlaylists = playlists.reduce((acc, { id, ...rest }) => {
+  const numericId = Number.parseInt(id);
+
+  if (numericId > idAutoincrementalCount) {
+    idAutoincrementalCount = numericId + 1;
+  }
+
   return deleted_playlists[id] === true ? acc : { ...acc, [id]: rest };
 }, {});
 
@@ -69,4 +77,21 @@ const updatedPlaylist = Object.keys(indexedPlaylists).map((id) => ({
   id,
   ...indexedPlaylists[id],
 }));
+
+// Add playlists
+for (const playlist of new_playlists) {
+  if (!indexedUsers[playlist.owner_id]) {
+    // the user doesn't exists
+    continue;
+  }
+
+  const validSongs = playlist.song_ids.every((id) => !!indexedSongs[id]);
+
+  if (!validSongs) {
+    // one or more songs are invalid
+    continue;
+  }
+
+  updatedPlaylist.push({ id: idAutoincrementalCount++, ...playlist });
+}
 
