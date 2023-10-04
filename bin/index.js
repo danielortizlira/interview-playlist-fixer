@@ -14,6 +14,12 @@ const handleInvalidInput = (filePath) => {
   process.exit(1);
 };
 
+const handleNotFound = (subject, context) => {
+  console.log(
+    `We couldn't find the ${subject} when ${context}. The change won't have any effect`
+  );
+};
+
 if (!fs.pathExistsSync(inputFilePath)) {
   handleInvalidInput(inputFilePath);
 }
@@ -37,3 +43,23 @@ const indexedUsers = users.reduce(indexerReducer, {});
 const indexedPlaylists = playlists.reduce((acc, { id, ...rest }) => {
   return deleted_playlists[id] === true ? acc : { ...acc, [id]: rest };
 }, {});
+
+// Add songs to playlists
+for (const { playlist_id, song_id } of add_songs_to_playlist) {
+  const errorContext = `adding the song ${song_id} to the playlist ${playlist_id}`;
+
+  if (!indexedPlaylists[playlist_id]) {
+    handleNotFound(`playlist ${playlist_id}`, errorContext);
+    continue;
+  }
+
+  if (!indexedSongs[song_id]) {
+    handleNotFound(`song ${song_id}`, errorContext);
+    continue;
+  }
+
+  indexedPlaylists[playlist_id] = {
+    ...indexedPlaylists[playlist_id],
+    song_ids: [...indexedPlaylists[playlist_id]["song_ids"], song_id],
+  };
+}
