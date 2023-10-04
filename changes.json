@@ -1,5 +1,5 @@
 {
-  "addSongToPlaylist": [
+  "add_songs_to_playlist": [
     {
       "playlist_id": "1",
       "song_id": "2"
@@ -13,7 +13,7 @@
       "song_id": "2"
     }
   ],
-  "assignPlaylistToUser": [
+  "new_playlists": [
     {
       "owner_id": "4",
       "song_ids": ["9", "34"]
@@ -23,5 +23,7 @@
       "song_ids": ["29"]
     }
   ],
-  "removePlaylist": ["2"]
+  "deleted_playlists": {
+    "2": true
+  }
 }
