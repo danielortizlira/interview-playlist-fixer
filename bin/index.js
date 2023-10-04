@@ -9,6 +9,8 @@ const argv = require("yargs")(process.argv.slice(2))
 
 const [inputFilePath, changesFilePath, outputFilePath] = argv._;
 
+const JSON_OPTIONS = { spaces: 2 };
+
 const handleInvalidInput = (filePath) => {
   console.log(`Sorry, we couldn't find the ${filePath} file.`);
   process.exit(1);
@@ -95,3 +97,12 @@ for (const playlist of new_playlists) {
   updatedPlaylist.push({ id: idAutoincrementalCount++, ...playlist });
 }
 
+fs.writeJSONSync(
+  outputFilePath,
+  {
+    users,
+    playlists: updatedPlaylist,
+    songs,
+  },
+  JSON_OPTIONS
+);
